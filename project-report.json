@@ -1,0 +1,26 @@
+{
+  "project": {
+    "name": "FreelanceHub",
+    "description": "MERN stack freelancing platform connecting freelancers with clients",
+    "type": "Minor Project"
+  },
+  "techStack": {
+    "backend": ["Node.js", "Express.js", "MongoDB", "Mongoose", "JWT", "Socket.io"],
+    "frontend": ["React", "Vite", "TailwindCSS", "shadcn/ui", "Zustand", "Axios"]
+  },
+  "features": [
+    "Dual user roles (Freelancer/Client)",
+    "JWT authentication + Google OAuth",
+    "Job posting and browsing",
+    "Proposal submission system",
+    "Contract management",
+    "Real-time messaging (Socket.io)",
+    "Reviews and ratings",
+    "Notifications"
+  ],
+  "architecture": {
+    "pattern": "MVC",
+    "models": ["User", "Job", "Proposal", "Contract", "Message", "Review", "Notification"]
+  },
+  "security": ["JWT authentication", "bcrypt password hashing", "Role-based access control", "CORS"]
+}

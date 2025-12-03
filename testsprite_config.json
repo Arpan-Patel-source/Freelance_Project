@@ -1,0 +1,48 @@
+{
+  "project_name": "FreelanceHub",
+  "project_type": "fullstack",
+  "testing_scope": {
+    "frontend": true,
+    "backend": true
+  },
+  "application_urls": {
+    "frontend": "http://localhost:5173",
+    "backend": "http://localhost:5000"
+  },
+  "test_credentials": {
+    "client": {
+      "email": "testclient@example.com",
+      "password": "TestClient123!",
+      "role": "client"
+    },
+    "freelancer": {
+      "email": "testfreelancer@example.com",
+      "password": "TestFreelancer123!",
+      "role": "freelancer"
+    }
+  },
+  "prd_file": "testsprite_prd.md",
+  "framework": {
+    "frontend": "React + Vite",
+    "backend": "Node.js + Express",
+    "database": "MongoDB"
+  },
+  "key_features": [
+    "Authentication (JWT + Google OAuth)",
+    "Job Management",
+    "Proposal System",
+    "Contract Management",
+    "Real-time Messaging (Socket.io)",
+    "Reviews & Ratings",
+    "Notifications"
+  ],
+  "critical_user_flows": [
+    "Client registration and job posting",
+    "Freelancer registration and proposal submission",
+    "Proposal acceptance and contract creation",
+    "Real-time messaging between users",
+    "Contract completion and review submission"
+  ],
+  "api_base_url": "http://localhost:5000/api",
+  "socket_url": "http://localhost:5000"
+}
