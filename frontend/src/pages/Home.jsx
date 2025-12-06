@@ -146,34 +146,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trust Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12 animate-fade-in-up">
-            <h2 className="text-4xl font-bold mb-4">Trusted by Industry Leaders</h2>
-            <p className="text-muted-foreground text-lg">Join thousands of successful professionals</p>
-          </div>
-          <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-            {[
-              { icon: <Award className="h-8 w-8" />, stat: '4.9/5', label: 'Average Rating' },
-              { icon: <CheckCircle2 className="h-8 w-8" />, stat: '98%', label: 'Success Rate' },
-              { icon: <TrendingUp className="h-8 w-8" />, stat: '24/7', label: 'Support' },
-              { icon: <Shield className="h-8 w-8" />, stat: '100%', label: 'Secure' },
-            ].map((item, index) => (
-              <ScrollReveal key={index} delay={index * 100}>
-                <div className="text-center p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-lg transition-all duration-300 hover-lift">
-                  <div className="inline-flex p-3 bg-purple-700 text-white rounded-xl mb-3">
-                    {item.icon}
-                  </div>
-                  <div className="text-3xl font-bold text-purple-700 mb-1">{item.stat}</div>
-                  <div className="text-sm text-muted-foreground">{item.label}</div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="relative bg-gradient-to-r from-purple-900 via-purple-700 to-pink-600 text-white py-24 overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii4xIi8+PC9nPjwvc3ZnPg==')] opacity-10"></div>
