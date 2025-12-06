@@ -6,6 +6,8 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { CheckCircle2 } from 'lucide-react';
 import useJobStore from '../store/useJobStore';
 
 export default function PostJob() {
@@ -25,6 +27,8 @@ export default function PostJob() {
   });
 
   const [errors, setErrors] = useState({});
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [createdJobId, setCreatedJobId] = useState(null);
 
   // Get today's date in YYYY-MM-DD format for min date validation
   const getTodayDate = () => {
@@ -179,7 +183,8 @@ export default function PostJob() {
         },
       };
       const job = await createJob(jobData);
-      navigate(`/jobs/${job._id}`);
+      setCreatedJobId(job._id);
+      setShowSuccessDialog(true);
     } catch (error) {
       console.error(error);
     }
@@ -188,10 +193,37 @@ export default function PostJob() {
   const categories = [
     'Web Development',
     'Mobile Development',
-    'Design',
-    'Writing',
-    'Marketing',
+    'UI/UX Design',
+    'Graphic Design',
+    'Logo Design',
+    'Illustration',
+    'Video Editing',
+    'Animation',
+    'Voice Talent',
+    'Music Production',
+    'Content Writing',
+    'Copywriting',
+    'Technical Writing',
+    'Translation',
+    'SEO & Digital Marketing',
+    'Social Media Marketing',
+    'Email Marketing',
     'Data Science',
+    'Machine Learning & AI',
+    'Data Analysis',
+    'Game Development',
+    'Software Development',
+    'DevOps & Cloud',
+    'Cybersecurity',
+    'Blockchain & Cryptocurrency',
+    'Virtual Assistant',
+    'Customer Support',
+    'Accounting & Finance',
+    'Legal Consulting',
+    'Business Consulting',
+    '3D Modeling',
+    'Architecture & Interior Design',
+    'Product Design',
     'Other',
   ];
 
@@ -298,7 +330,7 @@ export default function PostJob() {
 
             <div className="grid md:grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="budgetMin">Min Budget ($)</Label>
+                <Label htmlFor="budgetMin">Min Budget (₹)</Label>
                 <Input
                   id="budgetMin"
                   type="number"
@@ -313,7 +345,7 @@ export default function PostJob() {
                 )}
               </div>
               <div>
-                <Label htmlFor="budgetMax">Max Budget ($)</Label>
+                <Label htmlFor="budgetMax">Max Budget (₹)</Label>
                 <Input
                   id="budgetMax"
                   type="number"
@@ -390,6 +422,40 @@ export default function PostJob() {
           </form>
         </CardContent>
       </Card>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+              <CheckCircle2 className="h-10 w-10 text-green-600" />
+            </div>
+            <DialogTitle className="text-center">Job Posted Successfully!</DialogTitle>
+            <DialogDescription className="text-center">
+              Your job has been posted and is now live. Freelancers can start submitting proposals.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowSuccessDialog(false);
+                navigate('/my-jobs');
+              }}
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                setShowSuccessDialog(false);
+                navigate(`/jobs/${createdJobId}`);
+              }}
+            >
+              View Job
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

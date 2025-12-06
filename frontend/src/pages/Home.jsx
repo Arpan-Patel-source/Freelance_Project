@@ -97,7 +97,7 @@ export default function Home() {
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold text-white mb-1">
-                  <AnimatedCounter end={10} prefix="$" suffix="M+" className="text-white" />
+                  <AnimatedCounter end={10} prefix="" suffix="M+" className="text-white" />
                 </div>
                 <div className="text-blue-200 text-sm">Paid Out</div>
               </div>

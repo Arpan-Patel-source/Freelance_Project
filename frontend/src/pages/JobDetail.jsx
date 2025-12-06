@@ -52,7 +52,7 @@ export default function JobDetail() {
 
     if (!value) return 'Bid amount is required';
     if (amount < minBudget) {
-      return `Bid amount must be at least $${minBudget} (job's minimum budget)`;
+      return `Bid amount must be at least ₹${minBudget} (job's minimum budget)`;
     }
     return '';
   };
@@ -248,7 +248,7 @@ export default function JobDetail() {
                       </div>
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="bidAmount">Bid Amount ($)</Label>
+                          <Label htmlFor="bidAmount">Bid Amount (₹)</Label>
                           <Input
                             id="bidAmount"
                             type="number"
@@ -266,7 +266,7 @@ export default function JobDetail() {
                             <p className="text-sm text-red-600 mt-1">{errors.bidAmount}</p>
                           )}
                           <p className="text-xs text-muted-foreground mt-1">
-                            Min: ${currentJob?.budget?.min || 0}
+                            Min: ₹{currentJob?.budget?.min || 0}
                           </p>
                         </div>
                         <div>

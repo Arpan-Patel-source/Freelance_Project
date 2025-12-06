@@ -64,6 +64,11 @@
     background-attachment: fixed;
     overflow-x: hidden;
     min-height: 100vh;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    line-height: 1.6;
   }
 
   /* Custom Scrollbar - Modern & Premium */
@@ -90,6 +95,32 @@
   * {
     scrollbar-width: thin;
     scrollbar-color: #6b4f6b #f9f5f9;
+  }
+
+  /* Fix text cutoff issues */
+  h1, h2, h3, h4, h5, h6, p, span, div, button, input, textarea, label {
+    line-height: 1.6;
+    padding-bottom: 0.1em;
+  }
+
+  /* Ensure proper rendering for text */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Fix for specific elements that may have cutoff */
+  button, a {
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+  }
+
+  /* Allow text selection in input fields and textareas */
+  input, textarea {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
   }
 }
 
