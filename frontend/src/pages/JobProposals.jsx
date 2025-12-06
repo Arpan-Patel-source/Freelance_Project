@@ -6,7 +6,7 @@ import { Badge } from '../components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Separator } from '../components/ui/separator';
 import api from '../lib/api';
-import { Star, DollarSign, Clock, Briefcase, ArrowLeft } from 'lucide-react';
+import { Star, IndianRupee, Clock, Briefcase, ArrowLeft } from 'lucide-react';
 import { formatCurrency, formatDate, getInitials } from '../lib/utils';
 
 export default function JobProposals() {
@@ -118,7 +118,7 @@ export default function JobProposals() {
         <CardContent>
           <div className="flex gap-6 text-sm">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <IndianRupee className="h-4 w-4 text-muted-foreground" />
               <span>{formatCurrency(job.budget.min)} - {formatCurrency(job.budget.max)}</span>
             </div>
             <div className="flex items-center gap-2">

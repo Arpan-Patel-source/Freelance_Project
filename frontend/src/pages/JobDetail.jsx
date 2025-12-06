@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import useJobStore from '../store/useJobStore';
 import useAuthStore from '../store/useAuthStore';
 import api from '../lib/api';
-import { Clock, DollarSign, Calendar, Star, Briefcase } from 'lucide-react';
+import { Clock, IndianRupee, Calendar, Star, Briefcase } from 'lucide-react';
 import { formatCurrency, formatDate, getInitials } from '../lib/utils';
 
 export default function JobDetail() {
@@ -149,7 +149,7 @@ export default function JobDetail() {
 
               <div className="grid md:grid-cols-2 gap-4 pt-4 border-t">
                 <div className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-muted-foreground" />
+                  <IndianRupee className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Budget</p>
                     <p className="font-semibold">

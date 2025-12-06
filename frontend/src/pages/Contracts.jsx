@@ -5,7 +5,7 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import api from '../lib/api';
 import { formatCurrency, formatDate } from '../lib/utils';
-import { Briefcase, DollarSign, Calendar } from 'lucide-react';
+import { Briefcase, IndianRupee, Calendar } from 'lucide-react';
 
 export default function Contracts() {
   const [contracts, setContracts] = useState([]);
@@ -83,7 +83,7 @@ export default function Contracts() {
               <CardContent>
                 <div className="grid md:grid-cols-3 gap-4 mb-4">
                   <div className="flex items-center gap-2">
-                    <DollarSign className="h-5 w-5 text-muted-foreground" />
+                    <IndianRupee className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm text-muted-foreground">Total Amount</p>
                       <p className="font-semibold">{formatCurrency(contract.totalAmount)}</p>

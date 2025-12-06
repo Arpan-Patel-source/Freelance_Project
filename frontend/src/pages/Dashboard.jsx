@@ -4,7 +4,7 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import useAuthStore from '../store/useAuthStore';
 import api from '../lib/api';
-import { DollarSign, Briefcase, Star, TrendingUp, RefreshCw, Sparkles, Zap, Target, Award } from 'lucide-react';
+import { IndianRupee, Briefcase, Star, TrendingUp, RefreshCw, Sparkles, Zap, Target, Award } from 'lucide-react';
 import { formatCurrency } from '../lib/utils';
 import AnimatedCounter from '../components/AnimatedCounter';
 import ScrollReveal from '../components/ScrollReveal';
@@ -123,7 +123,7 @@ export default function Dashboard() {
             <StatCard
               title={user?.role === 'freelancer' ? 'Total Earnings' : 'Total Spent'}
               value={formatCurrency(user?.role === 'freelancer' ? stats.totalEarnings : user?.totalSpent || 0)}
-              icon={<DollarSign className="h-5 w-5" />}
+              icon={<IndianRupee className="h-5 w-5" />}
               gradient="bg-gradient-to-br from-green-500 to-emerald-500"
               isNumber={false}
             />

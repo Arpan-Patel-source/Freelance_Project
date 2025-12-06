@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Briefcase, Calendar, DollarSign, Eye, FileText, Trash2, Edit, Users } from 'lucide-react';
+import { Briefcase, Calendar, IndianRupee, Eye, FileText, Trash2, Edit, Users } from 'lucide-react';
 import api from '../lib/api';
 import { formatCurrency, formatDate } from '../lib/utils';
 import { SkeletonJobCard } from '../components/LoadingSkeleton';
@@ -205,7 +205,7 @@ export default function MyJobs() {
                                             <div className="flex items-center gap-6 text-sm">
                                                 {job.budget && (
                                                     <span className="flex items-center gap-1 font-semibold text-green-600">
-                                                        <DollarSign className="h-4 w-4" />
+                                                        <IndianRupee className="h-4 w-4" />
                                                         {formatCurrency(job.budget.min)} - {formatCurrency(job.budget.max)}
                                                     </span>
                                                 )}

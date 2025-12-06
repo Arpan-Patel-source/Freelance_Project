@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Briefcase, Users, DollarSign, Shield, Search, MessageSquare, Sparkles, Zap, TrendingUp, Award, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Briefcase, Users, IndianRupee, Shield, Search, MessageSquare, Sparkles, Zap, TrendingUp, Award, CheckCircle2, ArrowRight } from 'lucide-react';
 import AnimatedCounter from '../components/AnimatedCounter';
 import ScrollReveal from '../components/ScrollReveal';
 
@@ -18,7 +18,7 @@ export default function Home() {
       description: 'Connect with skilled freelancers from around the world',
     },
     {
-      icon: <DollarSign className="h-10 w-10 text-primary" />,
+      icon: <IndianRupee className="h-10 w-10 text-primary" />,
       title: 'Secure Payments',
       description: 'Safe and secure payment system with escrow protection',
     },

@@ -6,7 +6,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import useJobStore from '../store/useJobStore';
-import { Search, MapPin, Clock, DollarSign, Sparkles } from 'lucide-react';
+import { Search, MapPin, Clock, IndianRupee, Sparkles } from 'lucide-react';
 import { formatCurrency, formatDate } from '../lib/utils';
 import { SkeletonJobCard } from '../components/LoadingSkeleton';
 import ScrollReveal from '../components/ScrollReveal';
@@ -34,7 +34,7 @@ export default function Jobs() {
       if (filters.category) queryFilters.category = filters.category;
       if (filters.budgetMin) queryFilters.budgetMin = filters.budgetMin;
       if (filters.budgetMax) queryFilters.budgetMax = filters.budgetMax;
-      
+
       // Fetch jobs with current filters (or all jobs if no filters)
       fetchJobs(queryFilters);
     }, 300); // 300ms debounce
@@ -175,7 +175,7 @@ export default function Jobs() {
                       <div className="flex items-center gap-4">
                         {job.budget && (
                           <span className="flex items-center gap-1 font-semibold text-green-600">
-                            <DollarSign className="h-4 w-4" />
+                            <IndianRupee className="h-4 w-4" />
                             {formatCurrency(job.budget.min)} - {formatCurrency(job.budget.max)}
                           </span>
                         )}

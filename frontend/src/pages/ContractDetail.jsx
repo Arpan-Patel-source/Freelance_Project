@@ -11,12 +11,12 @@ import { Separator } from '../components/ui/separator';
 import useAuthStore from '../store/useAuthStore';
 import api from '../lib/api';
 import { formatCurrency, formatDate, getInitials } from '../lib/utils';
-import { 
-  ArrowLeft, 
-  DollarSign, 
-  Calendar, 
-  Briefcase, 
-  Upload, 
+import {
+  ArrowLeft,
+  IndianRupee,
+  Calendar,
+  Briefcase,
+  Upload,
   CheckCircle,
   XCircle,
   FileText,
@@ -54,7 +54,7 @@ export default function ContractDetail() {
       setLoading(true);
       const { data } = await api.get(`/contracts/${id}`);
       setContract(data);
-      
+
       // Check if user has already reviewed
       if (data.status === 'completed') {
         checkIfReviewed(data);
@@ -72,13 +72,13 @@ export default function ContractDetail() {
       if (!contractData?.client?._id || !contractData?.freelancer?._id || !user?._id) {
         return;
       }
-      
-      const revieweeId = user._id === contractData.client._id 
-        ? contractData.freelancer._id 
+
+      const revieweeId = user._id === contractData.client._id
+        ? contractData.freelancer._id
         : contractData.client._id;
-      
+
       if (!revieweeId) return;
-      
+
       const { data } = await api.get(`/reviews/user/${revieweeId}`);
       const existingReview = data.find(r => r.contract === id && r.reviewer === user._id);
       setHasReviewed(!!existingReview);
@@ -146,7 +146,7 @@ export default function ContractDetail() {
 
   const handleMessageUser = () => {
     if (!contract) return;
-    
+
     const otherUserId = isClient ? contract.freelancer?._id : contract.client?._id;
     if (otherUserId) {
       navigate(`/messages?user=${otherUserId}`);
@@ -157,7 +157,7 @@ export default function ContractDetail() {
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
-    
+
     if (!review.comment.trim()) {
       alert('Please write a review comment');
       return;
@@ -166,7 +166,7 @@ export default function ContractDetail() {
     try {
       setSubmittingReview(true);
       const revieweeId = isClient ? contract.freelancer._id : contract.client._id;
-      
+
       await api.post('/reviews', {
         contractId: id,
         revieweeId,
@@ -178,7 +178,7 @@ export default function ContractDetail() {
           professionalism: review.professionalism
         }
       });
-      
+
       alert('Review submitted successfully!');
       setShowReviewForm(false);
       setHasReviewed(true);
@@ -267,7 +267,7 @@ export default function ContractDetail() {
         <CardContent>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="flex items-center gap-3">
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <IndianRupee className="h-8 w-8 text-green-600" />
               <div>
                 <p className="text-sm text-muted-foreground">Total Amount</p>
                 <p className="text-2xl font-bold">{formatCurrency(contract.totalAmount)}</p>
@@ -477,11 +477,10 @@ export default function ContractDetail() {
                             className="focus:outline-none"
                           >
                             <Star
-                              className={`h-8 w-8 ${
-                                star <= review.rating
+                              className={`h-8 w-8 ${star <= review.rating
                                   ? 'fill-yellow-400 text-yellow-400'
                                   : 'text-gray-300'
-                              }`}
+                                }`}
                             />
                           </button>
                         ))}
@@ -502,11 +501,10 @@ export default function ContractDetail() {
                               className="focus:outline-none"
                             >
                               <Star
-                                className={`h-5 w-5 ${
-                                  star <= review.communication
+                                className={`h-5 w-5 ${star <= review.communication
                                     ? 'fill-yellow-400 text-yellow-400'
                                     : 'text-gray-300'
-                                }`}
+                                  }`}
                               />
                             </button>
                           ))}
@@ -523,11 +521,10 @@ export default function ContractDetail() {
                               className="focus:outline-none"
                             >
                               <Star
-                                className={`h-5 w-5 ${
-                                  star <= review.quality
+                                className={`h-5 w-5 ${star <= review.quality
                                     ? 'fill-yellow-400 text-yellow-400'
                                     : 'text-gray-300'
-                                }`}
+                                  }`}
                               />
                             </button>
                           ))}
@@ -544,11 +541,10 @@ export default function ContractDetail() {
                               className="focus:outline-none"
                             >
                               <Star
-                                className={`h-5 w-5 ${
-                                  star <= review.professionalism
+                                className={`h-5 w-5 ${star <= review.professionalism
                                     ? 'fill-yellow-400 text-yellow-400'
                                     : 'text-gray-300'
-                                }`}
+                                  }`}
                               />
                             </button>
                           ))}
@@ -672,8 +668,8 @@ export default function ContractDetail() {
               <CardTitle>Communication</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button 
-                onClick={handleMessageUser} 
+              <Button
+                onClick={handleMessageUser}
                 className="w-full"
                 variant="outline"
               >

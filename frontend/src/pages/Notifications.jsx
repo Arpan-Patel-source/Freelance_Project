@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { Bell, MessageSquare, Briefcase, DollarSign, Star, Check, CheckCheck } from 'lucide-react';
+import { Bell, MessageSquare, Briefcase, IndianRupee, Star, Check, CheckCheck } from 'lucide-react';
 import useNotificationStore from '../store/useNotificationStore';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -10,7 +10,7 @@ const iconMap = {
     proposal: Briefcase,
     message: MessageSquare,
     contract: Briefcase,
-    payment: DollarSign,
+    payment: IndianRupee,
     review: Star,
     job: Briefcase
 };
@@ -97,8 +97,8 @@ export default function Notifications() {
                                 <Card
                                     key={notification._id}
                                     className={`cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${!notification.isRead
-                                            ? 'border-2 border-purple-300 bg-purple-50/50'
-                                            : 'border hover:border-purple-200'
+                                        ? 'border-2 border-purple-300 bg-purple-50/50'
+                                        : 'border hover:border-purple-200'
                                         }`}
                                     onClick={() => handleNotificationClick(notification)}
                                     style={{ animationDelay: `${index * 50}ms` }}
