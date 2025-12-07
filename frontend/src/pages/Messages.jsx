@@ -19,8 +19,9 @@ export default function Messages() {
   const [attachments, setAttachments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [showLinkInput, setShowLinkInput] = useState(false);
+  const [linkInput, setLinkInput] = useState({ url: '', name: '' });
   const messagesEndRef = useRef(null);
-  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchConversations();
@@ -64,7 +65,10 @@ export default function Messages() {
   const fetchMessages = async (userId) => {
     try {
       const { data } = await api.get(`/messages/${userId}`);
-      setMessages(data);
+      setMessages(prev => {
+        if (JSON.stringify(prev) === JSON.stringify(data)) return prev;
+        return data;
+      });
       setSelectedConversation(userId);
       // Mark as read
       await api.put(`/messages/${userId}/read`);
@@ -82,17 +86,12 @@ export default function Messages() {
       console.log('Sending message to:', selectedConversation);
 
       // Prepare attachments data
-      const attachmentsData = await Promise.all(
-        attachments.map(async (file) => {
-          // Convert file to base64 or upload to a service
-          const base64 = await fileToBase64(file);
-          return {
-            name: file.name,
-            type: file.type,
-            url: base64 // In production, upload to cloud storage and use the URL
-          };
-        })
-      );
+      // Prepare attachments data (now just links)
+      const attachmentsData = attachments.map(file => ({
+        name: file.name,
+        fileType: 'link', // All drive attachments are treated as links
+        url: file.url
+      }));
 
       const { data } = await api.post('/messages', {
         receiverId: selectedConversation,
@@ -116,20 +115,18 @@ export default function Messages() {
     }
   };
 
-  // Convert file to base64
-  const fileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  };
+  // Add Link Attachment
+  const addLinkAttachment = () => {
+    if (!linkInput.url || !linkInput.name) return;
 
-  // Handle file selection
-  const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
-    setAttachments([...attachments, ...files]);
+    setAttachments([...attachments, {
+      name: linkInput.name,
+      url: linkInput.url,
+      fileType: 'link'
+    }]);
+
+    setLinkInput({ url: '', name: '' });
+    setShowLinkInput(false);
   };
 
   // Remove attachment
@@ -140,6 +137,7 @@ export default function Messages() {
   // Get file type category
   const getFileType = (mimeType) => {
     if (!mimeType) return 'file';
+    if (mimeType === 'link') return 'link'; // Handle our new link type
     if (mimeType.startsWith('image/')) return 'image';
     if (mimeType.startsWith('video/')) return 'video';
     if (mimeType.startsWith('audio/')) return 'audio';
@@ -155,9 +153,9 @@ export default function Messages() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Messages</h1>
 
-      <div className="grid lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+      <div className="grid lg:grid-cols-3 gap-6 h-[85vh]">
         {/* Conversations List */}
-        <Card className="lg:col-span-1">
+        <Card className="lg:col-span-1 flex flex-col h-full">
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>Conversations</CardTitle>
@@ -171,8 +169,8 @@ export default function Messages() {
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="p-0">
-            <div className="divide-y max-h-[600px] overflow-y-auto">
+          <CardContent className="p-0 flex-1 flex flex-col min-h-0">
+            <div className="divide-y flex-1 overflow-y-auto">
               {conversations.length === 0 ? (
                 <div className="text-center text-muted-foreground py-8 px-4">
                   <p className="font-semibold mb-2">No conversations yet</p>
@@ -213,13 +211,13 @@ export default function Messages() {
         </Card>
 
         {/* Messages */}
-        <Card className="lg:col-span-2 flex flex-col">
+        <Card className="lg:col-span-2 flex flex-col h-full">
           <CardHeader>
             <CardTitle>
               {selectedConversation ? 'Chat' : 'Select a conversation'}
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col p-0">
+          <CardContent className="flex-1 flex flex-col p-0 min-h-0">
             {!selectedConversation ? (
               <div className="flex-1 flex items-center justify-center text-muted-foreground">
                 Select a conversation to start messaging
@@ -249,55 +247,26 @@ export default function Messages() {
                           {/* Display Attachments */}
                           {message.attachments && message.attachments.length > 0 && (
                             <div className={`space-y-2 ${message.content ? 'mt-2' : ''}`}>
-                              {message.attachments.map((attachment, idx) => {
-                                const fileType = getFileType(attachment.type);
-
-                                return (
-                                  <div key={idx} className="mt-2">
-                                    {fileType === 'image' && (
-                                      <div>
-                                        <img
-                                          src={attachment.url}
-                                          alt={attachment.name}
-                                          className="max-w-full rounded border cursor-pointer hover:opacity-90"
-                                          style={{ maxHeight: '300px' }}
-                                          onClick={() => window.open(attachment.url, '_blank')}
-                                        />
-                                        <p className="text-xs mt-1 opacity-70">{attachment.name}</p>
-                                      </div>
-                                    )}
-
-                                    {fileType === 'video' && (
-                                      <div>
-                                        <video
-                                          controls
-                                          className="max-w-full rounded border"
-                                          style={{ maxHeight: '300px' }}
-                                        >
-                                          <source src={attachment.url} type={attachment.type} />
-                                          Your browser does not support the video tag.
-                                        </video>
-                                        <p className="text-xs mt-1 opacity-70">{attachment.name}</p>
-                                      </div>
-                                    )}
-
-                                    {(fileType === 'document' || fileType === 'file') && (
-                                      <a
-                                        href={attachment.url}
-                                        download={attachment.name}
-                                        className={`flex items-center gap-2 p-2 rounded border ${isOwn
-                                          ? 'bg-primary-foreground/10 hover:bg-primary-foreground/20'
-                                          : 'bg-background hover:bg-accent'
-                                          }`}
-                                      >
-                                        <FileText className="h-4 w-4" />
-                                        <span className="text-xs flex-1 truncate">{attachment.name}</span>
-                                        <Download className="h-3 w-3" />
-                                      </a>
-                                    )}
-                                  </div>
-                                );
-                              })}
+                              {message.attachments.map((attachment, idx) => (
+                                <div key={idx} className="mt-2">
+                                  <a
+                                    href={attachment.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`flex items-center gap-2 p-2 rounded border ${isOwn
+                                      ? 'bg-primary-foreground/10 hover:bg-primary-foreground/20'
+                                      : 'bg-background hover:bg-accent'
+                                      }`}
+                                  >
+                                    <FileText className="h-4 w-4" />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-xs font-medium truncate">{attachment.name}</p>
+                                      <p className="text-[10px] opacity-70 truncate">{attachment.url}</p>
+                                    </div>
+                                    <Download className="h-3 w-3 opacity-50" />
+                                  </a>
+                                </div>
+                              ))}
                             </div>
                           )}
                           <p
@@ -315,24 +284,59 @@ export default function Messages() {
 
                 {/* Message Input */}
                 <form onSubmit={sendMessage} className="p-4 border-t space-y-2">
-                  {/* Attachment Preview */}
+                  {/* Link Input Dialog */}
+                  {showLinkInput && (
+                    <div className="p-3 bg-muted rounded mb-2 space-y-2 border">
+                      <p className="text-sm font-semibold">Add Google Drive Link</p>
+                      <Input
+                        placeholder="Link Name (e.g., Project Specs)"
+                        value={linkInput.name}
+                        onChange={(e) => setLinkInput({ ...linkInput, name: e.target.value })}
+                        size="sm"
+                      />
+                      <Input
+                        placeholder="https://drive.google.com/..."
+                        value={linkInput.url}
+                        onChange={(e) => setLinkInput({ ...linkInput, url: e.target.value })}
+                        size="sm"
+                      />
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setShowLinkInput(false);
+                            setLinkInput({ url: '', name: '' });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={addLinkAttachment}
+                          disabled={!linkInput.url || !linkInput.name}
+                        >
+                          Add Link
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Attachment Preview (Links) */}
                   {attachments.length > 0 && (
-                    <div className="flex flex-wrap gap-2 p-2 bg-muted rounded">
+                    <div className="flex flex-wrap gap-2 p-2 bg-muted rounded mb-2">
                       {attachments.map((file, idx) => (
                         <div
                           key={idx}
                           className="flex items-center gap-2 bg-background px-3 py-2 rounded border"
                         >
-                          {file.type.startsWith('image/') && (
-                            <ImageIcon className="h-4 w-4 text-blue-600" />
-                          )}
-                          {file.type.startsWith('video/') && (
-                            <Video className="h-4 w-4 text-purple-600" />
-                          )}
-                          {!file.type.startsWith('image/') && !file.type.startsWith('video/') && (
-                            <File className="h-4 w-4 text-gray-600" />
-                          )}
-                          <span className="text-xs max-w-[150px] truncate">{file.name}</span>
+                          <FileText className="h-4 w-4 text-blue-600" />
+                          <div className="flex flex-col max-w-[150px]">
+                            <span className="text-xs font-medium truncate">{file.name}</span>
+                            <span className="text-[10px] text-muted-foreground truncate">{file.url}</span>
+                          </div>
                           <button
                             type="button"
                             onClick={() => removeAttachment(idx)}
@@ -347,19 +351,11 @@ export default function Messages() {
 
                   {/* Input Area */}
                   <div className="flex gap-2">
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileSelect}
-                      className="hidden"
-                      multiple
-                      accept="image/*,video/*,.pdf,.doc,.docx,.txt"
-                    />
                     <Button
                       type="button"
-                      variant="outline"
+                      variant={showLinkInput ? "secondary" : "outline"}
                       size="icon"
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={() => setShowLinkInput(!showLinkInput)}
                       disabled={loading}
                     >
                       <Paperclip className="h-4 w-4" />
@@ -391,6 +387,6 @@ export default function Messages() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </div >
   );
 }
