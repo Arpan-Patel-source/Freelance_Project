@@ -11,8 +11,13 @@ const getConversationId = (userId1, userId2) => {
 // @access  Private
 export const sendMessage = async (req, res) => {
   try {
-    const { receiverId, content } = req.body;
+    const { receiverId, content, attachments } = req.body;
     const senderId = req.user._id;
+
+    // Ensure at least content or attachments are provided
+    if (!content && (!attachments || attachments.length === 0)) {
+      return res.status(400).json({ message: 'Message must have content or attachments' });
+    }
 
     const conversationId = getConversationId(senderId, receiverId);
 
@@ -20,7 +25,8 @@ export const sendMessage = async (req, res) => {
       conversation: conversationId,
       sender: senderId,
       receiver: receiverId,
-      content
+      content: content || '', // Allow empty content if there are attachments
+      attachments: attachments || []
     });
 
     const populatedMessage = await Message.findById(message._id)

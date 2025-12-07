@@ -28,7 +28,7 @@ const notificationSchema = new mongoose.Schema({
     default: false
   },
   relatedId: {
-    type: mongoose.Schema.Types.ObjectId
+    type: String
   }
 }, {
   timestamps: true

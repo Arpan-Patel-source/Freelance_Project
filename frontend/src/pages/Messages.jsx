@@ -6,7 +6,7 @@ import { Button } from '../components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import useAuthStore from '../store/useAuthStore';
 import api from '../lib/api';
-import { Send, RefreshCw } from 'lucide-react';
+import { Send, RefreshCw, Paperclip, X, File, Image as ImageIcon, Video, FileText, Download } from 'lucide-react';
 import { getInitials, formatDate } from '../lib/utils';
 
 export default function Messages() {
@@ -16,13 +16,15 @@ export default function Messages() {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [attachments, setAttachments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchConversations();
-    
+
     // Check if user ID is in URL params
     const userId = searchParams.get('user');
     if (userId) {
@@ -73,26 +75,75 @@ export default function Messages() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedConversation) return;
+    if ((!newMessage.trim() && attachments.length === 0) || !selectedConversation) return;
 
     setLoading(true);
     try {
       console.log('Sending message to:', selectedConversation);
+
+      // Prepare attachments data
+      const attachmentsData = await Promise.all(
+        attachments.map(async (file) => {
+          // Convert file to base64 or upload to a service
+          const base64 = await fileToBase64(file);
+          return {
+            name: file.name,
+            type: file.type,
+            url: base64 // In production, upload to cloud storage and use the URL
+          };
+        })
+      );
+
       const { data } = await api.post('/messages', {
         receiverId: selectedConversation,
         content: newMessage,
+        attachments: attachmentsData
       });
+
       console.log('Message sent:', data);
       setMessages([...messages, data]);
       setNewMessage('');
+      setAttachments([]);
+
       // Refresh conversations list to show this conversation
       console.log('Refreshing conversations...');
       await fetchConversations();
     } catch (error) {
       console.error('Failed to send message:', error);
+      alert(error.response?.data?.message || 'Failed to send message');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Convert file to base64
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  // Handle file selection
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    setAttachments([...attachments, ...files]);
+  };
+
+  // Remove attachment
+  const removeAttachment = (index) => {
+    setAttachments(attachments.filter((_, i) => i !== index));
+  };
+
+  // Get file type category
+  const getFileType = (mimeType) => {
+    if (!mimeType) return 'file';
+    if (mimeType.startsWith('image/')) return 'image';
+    if (mimeType.startsWith('video/')) return 'video';
+    if (mimeType.startsWith('audio/')) return 'audio';
+    return 'document';
   };
 
   const getOtherUser = (message) => {
@@ -110,9 +161,9 @@ export default function Messages() {
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>Conversations</CardTitle>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={fetchConversations}
                 disabled={refreshing}
               >
@@ -133,13 +184,12 @@ export default function Messages() {
                 conversations.map((conv) => {
                   const otherUser = getOtherUser(conv);
                   if (!otherUser) return null;
-                  
+
                   return (
                     <div
                       key={conv._id}
-                      className={`p-4 cursor-pointer hover:bg-accent transition-colors ${
-                        selectedConversation === otherUser._id ? 'bg-accent' : ''
-                      }`}
+                      className={`p-4 cursor-pointer hover:bg-accent transition-colors ${selectedConversation === otherUser._id ? 'bg-accent' : ''
+                        }`}
                       onClick={() => fetchMessages(otherUser._id)}
                     >
                       <div className="flex items-center gap-3">
@@ -187,17 +237,72 @@ export default function Messages() {
                         className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-[70%] rounded-lg p-3 ${
-                            isOwn
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted'
-                          }`}
-                        >
-                          <p className="text-sm">{message.content}</p>
-                          <p
-                            className={`text-xs mt-1 ${
-                              isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'
+                          className={`max-w-[70%] rounded-lg p-3 ${isOwn
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted'
                             }`}
+                        >
+                          {message.content && (
+                            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                          )}
+
+                          {/* Display Attachments */}
+                          {message.attachments && message.attachments.length > 0 && (
+                            <div className={`space-y-2 ${message.content ? 'mt-2' : ''}`}>
+                              {message.attachments.map((attachment, idx) => {
+                                const fileType = getFileType(attachment.type);
+
+                                return (
+                                  <div key={idx} className="mt-2">
+                                    {fileType === 'image' && (
+                                      <div>
+                                        <img
+                                          src={attachment.url}
+                                          alt={attachment.name}
+                                          className="max-w-full rounded border cursor-pointer hover:opacity-90"
+                                          style={{ maxHeight: '300px' }}
+                                          onClick={() => window.open(attachment.url, '_blank')}
+                                        />
+                                        <p className="text-xs mt-1 opacity-70">{attachment.name}</p>
+                                      </div>
+                                    )}
+
+                                    {fileType === 'video' && (
+                                      <div>
+                                        <video
+                                          controls
+                                          className="max-w-full rounded border"
+                                          style={{ maxHeight: '300px' }}
+                                        >
+                                          <source src={attachment.url} type={attachment.type} />
+                                          Your browser does not support the video tag.
+                                        </video>
+                                        <p className="text-xs mt-1 opacity-70">{attachment.name}</p>
+                                      </div>
+                                    )}
+
+                                    {(fileType === 'document' || fileType === 'file') && (
+                                      <a
+                                        href={attachment.url}
+                                        download={attachment.name}
+                                        className={`flex items-center gap-2 p-2 rounded border ${isOwn
+                                          ? 'bg-primary-foreground/10 hover:bg-primary-foreground/20'
+                                          : 'bg-background hover:bg-accent'
+                                          }`}
+                                      >
+                                        <FileText className="h-4 w-4" />
+                                        <span className="text-xs flex-1 truncate">{attachment.name}</span>
+                                        <Download className="h-3 w-3" />
+                                      </a>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                          <p
+                            className={`text-xs mt-1 ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'
+                              }`}
                           >
                             {formatDate(message.createdAt)}
                           </p>
@@ -209,15 +314,74 @@ export default function Messages() {
                 </div>
 
                 {/* Message Input */}
-                <form onSubmit={sendMessage} className="p-4 border-t">
+                <form onSubmit={sendMessage} className="p-4 border-t space-y-2">
+                  {/* Attachment Preview */}
+                  {attachments.length > 0 && (
+                    <div className="flex flex-wrap gap-2 p-2 bg-muted rounded">
+                      {attachments.map((file, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-2 bg-background px-3 py-2 rounded border"
+                        >
+                          {file.type.startsWith('image/') && (
+                            <ImageIcon className="h-4 w-4 text-blue-600" />
+                          )}
+                          {file.type.startsWith('video/') && (
+                            <Video className="h-4 w-4 text-purple-600" />
+                          )}
+                          {!file.type.startsWith('image/') && !file.type.startsWith('video/') && (
+                            <File className="h-4 w-4 text-gray-600" />
+                          )}
+                          <span className="text-xs max-w-[150px] truncate">{file.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeAttachment(idx)}
+                            className="hover:bg-destructive/10 rounded p-1"
+                          >
+                            <X className="h-3 w-3 text-destructive" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Input Area */}
                   <div className="flex gap-2">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileSelect}
+                      className="hidden"
+                      multiple
+                      accept="image/*,video/*,.pdf,.doc,.docx,.txt"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={loading}
+                    >
+                      <Paperclip className="h-4 w-4" />
+                    </Button>
                     <Input
                       placeholder="Type a message..."
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          if ((newMessage.trim() || attachments.length > 0) && !loading) {
+                            sendMessage(e);
+                          }
+                        }
+                      }}
                       disabled={loading}
                     />
-                    <Button type="submit" disabled={loading || !newMessage.trim()}>
+                    <Button
+                      type="submit"
+                      disabled={loading || (!newMessage.trim() && attachments.length === 0)}
+                    >
                       <Send className="h-4 w-4" />
                     </Button>
                   </div>

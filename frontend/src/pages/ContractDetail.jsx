@@ -94,6 +94,20 @@ export default function ContractDetail() {
       return;
     }
 
+    // Validate deliverable name contains meaningful text (must have at least some letters)
+    const hasLetters = /[a-zA-Z]/.test(deliverable.name);
+    if (!hasLetters) {
+      alert('Deliverable name must contain meaningful text, not just numbers or special characters');
+      return;
+    }
+
+    // Trim and check minimum length
+    const trimmedName = deliverable.name.trim();
+    if (trimmedName.length < 3) {
+      alert('Deliverable name must be at least 3 characters long');
+      return;
+    }
+
     try {
       setSubmitting(true);
       await api.post(`/contracts/${id}/deliverables`, deliverable);
@@ -333,6 +347,9 @@ export default function ContractDetail() {
                       onChange={(e) => setDeliverable({ ...deliverable, name: e.target.value })}
                       required
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Provide a descriptive name (minimum 3 characters, must contain letters)
+                    </p>
                   </div>
                   <div>
                     <Label htmlFor="url">File URL / Link</Label>
@@ -478,8 +495,8 @@ export default function ContractDetail() {
                           >
                             <Star
                               className={`h-8 w-8 ${star <= review.rating
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'text-gray-300'
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'text-gray-300'
                                 }`}
                             />
                           </button>
@@ -502,8 +519,8 @@ export default function ContractDetail() {
                             >
                               <Star
                                 className={`h-5 w-5 ${star <= review.communication
-                                    ? 'fill-yellow-400 text-yellow-400'
-                                    : 'text-gray-300'
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'text-gray-300'
                                   }`}
                               />
                             </button>
@@ -522,8 +539,8 @@ export default function ContractDetail() {
                             >
                               <Star
                                 className={`h-5 w-5 ${star <= review.quality
-                                    ? 'fill-yellow-400 text-yellow-400'
-                                    : 'text-gray-300'
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'text-gray-300'
                                   }`}
                               />
                             </button>
@@ -542,8 +559,8 @@ export default function ContractDetail() {
                             >
                               <Star
                                 className={`h-5 w-5 ${star <= review.professionalism
-                                    ? 'fill-yellow-400 text-yellow-400'
-                                    : 'text-gray-300'
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'text-gray-300'
                                   }`}
                               />
                             </button>
