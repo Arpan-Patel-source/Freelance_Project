@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['freelancer', 'client'],
+    enum: ['freelancer', 'client', 'admin'],
     required: [true, 'Please specify role']
   },
   avatar: {
@@ -97,6 +97,10 @@ const userSchema = new mongoose.Schema({
     default: 0
   },
   isVerified: {
+    type: Boolean,
+    default: false
+  },
+  suspended: {
     type: Boolean,
     default: false
   },

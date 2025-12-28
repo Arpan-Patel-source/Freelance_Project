@@ -17,11 +17,7 @@ export default function Home() {
       title: 'Hire Top Talent',
       description: 'Connect with skilled freelancers from around the world',
     },
-    {
-      icon: <IndianRupee className="h-10 w-10 text-primary" />,
-      title: 'Secure Payments',
-      description: 'Safe and secure payment system with escrow protection',
-    },
+
     {
       icon: <MessageSquare className="h-10 w-10 text-primary" />,
       title: 'Real-time Chat',

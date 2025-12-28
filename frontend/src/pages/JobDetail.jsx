@@ -11,7 +11,7 @@ import useJobStore from '../store/useJobStore';
 import useAuthStore from '../store/useAuthStore';
 import api from '../lib/api';
 import { Clock, IndianRupee, Calendar, Star, Briefcase } from 'lucide-react';
-import { formatCurrency, formatDate, getInitials } from '../lib/utils';
+import { formatCurrency, formatDateTime, getInitials } from '../lib/utils';
 
 export default function JobDetail() {
   const { id } = useParams();
@@ -125,7 +125,7 @@ export default function JobDetail() {
               </div>
               <CardTitle className="text-3xl">{currentJob.title}</CardTitle>
               <CardDescription>
-                Posted {formatDate(currentJob.createdAt)}
+                Posted {formatDateTime(currentJob.createdAt)}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -177,7 +177,7 @@ export default function JobDetail() {
                     <Calendar className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm text-muted-foreground">Deadline</p>
-                      <p className="font-semibold">{formatDate(currentJob.deadline)}</p>
+                      <p className="font-semibold">{formatDateTime(currentJob.deadline)}</p>
                     </div>
                   </div>
                 )}

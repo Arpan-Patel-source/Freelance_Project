@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import api from '../lib/api';
-import { formatCurrency, formatDate } from '../lib/utils';
+import { formatCurrency, formatDateTime } from '../lib/utils';
 import { Briefcase, IndianRupee, Calendar } from 'lucide-react';
 
 export default function Contracts() {
@@ -72,7 +72,7 @@ export default function Contracts() {
                   <div>
                     <CardTitle>{contract.job?.title || 'Contract'}</CardTitle>
                     <CardDescription>
-                      {contract.job?.category} • Started {formatDate(contract.startDate)}
+                      {contract.job?.category} • Started {formatDateTime(contract.startDate)}
                     </CardDescription>
                   </div>
                   <Badge variant={getStatusColor(contract.status)}>
@@ -101,7 +101,7 @@ export default function Contracts() {
                       <Calendar className="h-5 w-5 text-muted-foreground" />
                       <div>
                         <p className="text-sm text-muted-foreground">End Date</p>
-                        <p className="font-semibold">{formatDate(contract.endDate)}</p>
+                        <p className="font-semibold">{formatDateTime(contract.endDate)}</p>
                       </div>
                     </div>
                   )}

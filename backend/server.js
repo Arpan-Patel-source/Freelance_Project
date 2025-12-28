@@ -5,6 +5,8 @@ import session from 'express-session';
 import passport from 'passport';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { fileURLToPath } from 'url';
+import path from 'path';
 import connectDB from './config/db.js';
 import { errorHandler } from './middleware/error.js';
 import { configurePassport } from './config/passport.js';
@@ -18,6 +20,8 @@ import contractRoutes from './routes/contractRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import uploadRoutes from './routes/upload.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config();
 
@@ -60,6 +64,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 configurePassport();
 
+// Get directory name for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
@@ -68,6 +79,8 @@ app.use('/api/contracts', contractRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -134,3 +147,4 @@ const startServer = async () => {
 };
 
 startServer();
+

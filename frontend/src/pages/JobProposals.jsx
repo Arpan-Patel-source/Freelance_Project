@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Separator } from '../components/ui/separator';
 import api from '../lib/api';
 import { Star, IndianRupee, Clock, Briefcase, ArrowLeft } from 'lucide-react';
-import { formatCurrency, formatDate, getInitials } from '../lib/utils';
+import { formatCurrency, formatDateTime, getInitials } from '../lib/utils';
 
 export default function JobProposals() {
   const { id } = useParams();
@@ -108,7 +108,7 @@ export default function JobProposals() {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-2xl">{job.title}</CardTitle>
-              <CardDescription>Posted {formatDate(job.createdAt)}</CardDescription>
+              <CardDescription>Posted {formatDateTime(job.createdAt)}</CardDescription>
             </div>
             <Badge variant={job.status === 'open' ? 'default' : 'secondary'}>
               {job.status}
@@ -306,7 +306,7 @@ function ProposalCard({ proposal, onAccept, onReject, accepting, showActions }) 
           </div>
           <div>
             <p className="text-sm text-muted-foreground mb-1">Submitted</p>
-            <p className="text-lg font-semibold">{formatDate(proposal.createdAt)}</p>
+            <p className="text-lg font-semibold">{formatDateTime(proposal.createdAt)}</p>
           </div>
         </div>
 

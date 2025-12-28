@@ -10,7 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Separator } from '../components/ui/separator';
 import useAuthStore from '../store/useAuthStore';
 import api from '../lib/api';
-import { formatCurrency, formatDate, getInitials } from '../lib/utils';
+import { formatCurrency, formatDateTime, getInitials } from '../lib/utils';
+import FilePicker from '../components/FilePicker';
 import {
   ArrowLeft,
   IndianRupee,
@@ -31,6 +32,7 @@ export default function ContractDetail() {
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDeliverableForm, setShowDeliverableForm] = useState(false);
+  const [showFilePicker, setShowFilePicker] = useState(false);
   const [deliverable, setDeliverable] = useState({ name: '', url: '' });
   const [submitting, setSubmitting] = useState(false);
   const [completing, setCompleting] = useState(false);
@@ -85,6 +87,14 @@ export default function ContractDetail() {
     } catch (error) {
       console.error('Failed to check reviews:', error);
     }
+  };
+
+  const handleFileSelected = (fileInfo) => {
+    setDeliverable({
+      name: fileInfo.name,
+      url: fileInfo.url,
+    });
+    setShowFilePicker(false);
   };
 
   const handleSubmitDeliverable = async (e) => {
@@ -265,7 +275,7 @@ export default function ContractDetail() {
             <div>
               <CardTitle className="text-2xl">{contract.job?.title}</CardTitle>
               <CardDescription>
-                {contract.job?.category} • Started {formatDate(contract.startDate)}
+                {contract.job?.category} • Started {formatDateTime(contract.startDate)}
               </CardDescription>
             </div>
             <div className="flex gap-2">
@@ -291,7 +301,7 @@ export default function ContractDetail() {
               <Calendar className="h-8 w-8 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Start Date</p>
-                <p className="text-lg font-semibold">{formatDate(contract.startDate)}</p>
+                <p className="text-lg font-semibold">{formatDateTime(contract.startDate)}</p>
               </div>
             </div>
             {contract.completedAt && (
@@ -299,7 +309,7 @@ export default function ContractDetail() {
                 <CheckCircle className="h-8 w-8 text-green-600" />
                 <div>
                   <p className="text-sm text-muted-foreground">Completed</p>
-                  <p className="text-lg font-semibold">{formatDate(contract.completedAt)}</p>
+                  <p className="text-lg font-semibold">{formatDateTime(contract.completedAt)}</p>
                 </div>
               </div>
             )}
@@ -338,48 +348,69 @@ export default function ContractDetail() {
               {/* Submit Form */}
               {showDeliverableForm && (
                 <form onSubmit={handleSubmitDeliverable} className="space-y-4 p-4 border rounded-lg bg-muted/50">
-                  <div>
-                    <Label htmlFor="name">Deliverable Name</Label>
-                    <Input
-                      id="name"
-                      placeholder="e.g., Final Website Design"
-                      value={deliverable.name}
-                      onChange={(e) => setDeliverable({ ...deliverable, name: e.target.value })}
-                      required
+                  {/* File Picker */}
+                  {showFilePicker ? (
+                    <FilePicker
+                      onFileSelected={handleFileSelected}
+                      onCancel={() => setShowFilePicker(false)}
                     />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Provide a descriptive name (minimum 3 characters, must contain letters)
-                    </p>
-                  </div>
-                  <div>
-                    <Label htmlFor="url">File URL / Link</Label>
-                    <Input
-                      id="url"
-                      type="url"
-                      placeholder="https://drive.google.com/..."
-                      value={deliverable.url}
-                      onChange={(e) => setDeliverable({ ...deliverable, url: e.target.value })}
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Upload your file to Google Drive, Dropbox, or similar and paste the link here
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button type="submit" disabled={submitting}>
-                      {submitting ? 'Submitting...' : 'Submit'}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowDeliverableForm(false);
-                        setDeliverable({ name: '', url: '' });
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
+                  ) : (
+                    <>
+                      <div>
+                        <Label htmlFor="name">Deliverable Name</Label>
+                        <Input
+                          id="name"
+                          placeholder="e.g., Final Website Design"
+                          value={deliverable.name}
+                          onChange={(e) => setDeliverable({ ...deliverable, name: e.target.value })}
+                          required
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Provide a descriptive name (minimum 3 characters, must contain letters)
+                        </p>
+                      </div>
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <Label htmlFor="url">File URL / Link</Label>
+                          <Button
+                            type="button"
+                            variant="link"
+                            size="sm"
+                            onClick={() => setShowFilePicker(true)}
+                            className="h-auto p-0 text-xs"
+                          >
+                            Browse or Upload File
+                          </Button>
+                        </div>
+                        <Input
+                          id="url"
+                          type="url"
+                          placeholder="https://drive.google.com/... or click 'Browse or Upload File'"
+                          value={deliverable.url}
+                          onChange={(e) => setDeliverable({ ...deliverable, url: e.target.value })}
+                          required
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Paste a link manually or use 'Browse or Upload File' to select from Google Drive or upload from desktop
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button type="submit" disabled={submitting}>
+                          {submitting ? 'Submitting...' : 'Submit'}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setShowDeliverableForm(false);
+                            setDeliverable({ name: '', url: '' });
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </form>
               )}
 
@@ -393,7 +424,7 @@ export default function ContractDetail() {
                         <div>
                           <p className="font-medium">{item.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            Uploaded {formatDate(item.uploadedAt)}
+                            Uploaded {formatDateTime(item.uploadedAt)}
                           </p>
                         </div>
                       </div>

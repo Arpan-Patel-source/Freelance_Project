@@ -7,7 +7,7 @@ import { Badge } from '../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import useJobStore from '../store/useJobStore';
 import { Search, MapPin, Clock, IndianRupee, Sparkles } from 'lucide-react';
-import { formatCurrency, formatDate } from '../lib/utils';
+import { formatCurrency, formatDateTime } from '../lib/utils';
 import { SkeletonJobCard } from '../components/LoadingSkeleton';
 import ScrollReveal from '../components/ScrollReveal';
 
@@ -37,7 +37,7 @@ export default function Jobs() {
 
       // Fetch jobs with current filters (or all jobs if no filters)
       fetchJobs(queryFilters);
-    }, 300); // 300ms debounce
+    }, 100); // 100ms debounce for near real-time feel
 
     return () => clearTimeout(delayDebounceFn);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,10 +57,37 @@ export default function Jobs() {
   const categories = [
     'Web Development',
     'Mobile Development',
-    'Design',
-    'Writing',
-    'Marketing',
+    'UI/UX Design',
+    'Graphic Design',
+    'Logo Design',
+    'Illustration',
+    'Video Editing',
+    'Animation',
+    'Voice Talent',
+    'Music Production',
+    'Content Writing',
+    'Copywriting',
+    'Technical Writing',
+    'Translation',
+    'SEO & Digital Marketing',
+    'Social Media Marketing',
+    'Email Marketing',
     'Data Science',
+    'Machine Learning & AI',
+    'Data Analysis',
+    'Game Development',
+    'Software Development',
+    'DevOps & Cloud',
+    'Cybersecurity',
+    'Blockchain & Cryptocurrency',
+    'Virtual Assistant',
+    'Customer Support',
+    'Accounting & Finance',
+    'Legal Consulting',
+    'Business Consulting',
+    '3D Modeling',
+    'Architecture & Interior Design',
+    'Product Design',
     'Other',
   ];
 
@@ -150,7 +177,7 @@ export default function Jobs() {
                           </CardTitle>
                         </Link>
                         <CardDescription className="mt-2 text-base">
-                          Posted by <span className="font-semibold">{job.client?.name || 'Unknown'}</span> • {formatDate(job.createdAt)}
+                          Posted by <span className="font-semibold">{job.client?.name || 'Unknown'}</span> • {formatDateTime(job.createdAt)}
                         </CardDescription>
                       </div>
                       <Badge className="bg-gradient-to-r from-purple-600 to-pink-500 text-white border-0 text-sm px-3 py-1">

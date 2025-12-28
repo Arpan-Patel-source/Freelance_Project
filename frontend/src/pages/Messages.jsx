@@ -6,8 +6,9 @@ import { Button } from '../components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import useAuthStore from '../store/useAuthStore';
 import api from '../lib/api';
-import { Send, RefreshCw, Paperclip, X, File, Image as ImageIcon, Video, FileText, Download } from 'lucide-react';
-import { getInitials, formatDate } from '../lib/utils';
+import { Send, RefreshCw, Paperclip, X, FileText, Download } from 'lucide-react';
+import { getInitials, formatTimeOnly } from '../lib/utils';
+import FilePicker from '../components/FilePicker';
 
 export default function Messages() {
   const { user } = useAuthStore();
@@ -19,8 +20,7 @@ export default function Messages() {
   const [attachments, setAttachments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [showLinkInput, setShowLinkInput] = useState(false);
-  const [linkInput, setLinkInput] = useState({ url: '', name: '' });
+  const [showFilePicker, setShowFilePicker] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -115,18 +115,10 @@ export default function Messages() {
     }
   };
 
-  // Add Link Attachment
-  const addLinkAttachment = () => {
-    if (!linkInput.url || !linkInput.name) return;
-
-    setAttachments([...attachments, {
-      name: linkInput.name,
-      url: linkInput.url,
-      fileType: 'link'
-    }]);
-
-    setLinkInput({ url: '', name: '' });
-    setShowLinkInput(false);
+  // Handle file selected from FilePicker
+  const handleFileSelected = (fileInfo) => {
+    setAttachments([...attachments, fileInfo]);
+    setShowFilePicker(false);
   };
 
   // Remove attachment
@@ -273,7 +265,7 @@ export default function Messages() {
                             className={`text-xs mt-1 ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'
                               }`}
                           >
-                            {formatDate(message.createdAt)}
+                            {formatTimeOnly(message.createdAt)}
                           </p>
                         </div>
                       </div>
@@ -284,44 +276,12 @@ export default function Messages() {
 
                 {/* Message Input */}
                 <form onSubmit={sendMessage} className="p-4 border-t space-y-2">
-                  {/* Link Input Dialog */}
-                  {showLinkInput && (
-                    <div className="p-3 bg-muted rounded mb-2 space-y-2 border">
-                      <p className="text-sm font-semibold">Add Google Drive Link</p>
-                      <Input
-                        placeholder="Link Name (e.g., Project Specs)"
-                        value={linkInput.name}
-                        onChange={(e) => setLinkInput({ ...linkInput, name: e.target.value })}
-                        size="sm"
-                      />
-                      <Input
-                        placeholder="https://drive.google.com/..."
-                        value={linkInput.url}
-                        onChange={(e) => setLinkInput({ ...linkInput, url: e.target.value })}
-                        size="sm"
-                      />
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setShowLinkInput(false);
-                            setLinkInput({ url: '', name: '' });
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="button"
-                          size="sm"
-                          onClick={addLinkAttachment}
-                          disabled={!linkInput.url || !linkInput.name}
-                        >
-                          Add Link
-                        </Button>
-                      </div>
-                    </div>
+                  {/* File Picker */}
+                  {showFilePicker && (
+                    <FilePicker
+                      onFileSelected={handleFileSelected}
+                      onCancel={() => setShowFilePicker(false)}
+                    />
                   )}
 
                   {/* Attachment Preview (Links) */}
@@ -353,9 +313,9 @@ export default function Messages() {
                   <div className="flex gap-2">
                     <Button
                       type="button"
-                      variant={showLinkInput ? "secondary" : "outline"}
+                      variant={showFilePicker ? "secondary" : "outline"}
                       size="icon"
-                      onClick={() => setShowLinkInput(!showLinkInput)}
+                      onClick={() => setShowFilePicker(!showFilePicker)}
                       disabled={loading}
                     >
                       <Paperclip className="h-4 w-4" />

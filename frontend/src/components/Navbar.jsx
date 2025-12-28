@@ -64,9 +64,27 @@ export default function Navbar() {
                 <Link to="/notifications" className="relative p-2 hover:bg-indigo-50 rounded-lg transition-colors group">
                   <Bell className={`h-5 w-5 transition-colors ${unreadCount > 0 ? 'text-purple-600 animate-bounce-subtle' : 'text-gray-600 group-hover:text-indigo-600'}`} />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse ring-2 ring-white"></span>
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white hover:animate-pulse">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
                   )}
                 </Link>
+
+                {/* Admin Panel Link - Only visible to admins */}
+                {user?.role === 'admin' && (
+                  <Link
+                    to="/admin/dashboard"
+                    className="text-sm font-medium text-red-600 hover:text-red-700 transition-colors relative group flex items-center gap-1"
+                  >
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
+                    Admin Panel
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-300"></span>
+                  </Link>
+                )}
+
                 <div className="flex items-center space-x-3 pl-3 border-l">
                   <Link to="/dashboard" className="group">
                     <Avatar className="ring-2 ring-transparent group-hover:ring-indigo-600 transition-all duration-300">

@@ -92,7 +92,15 @@ export const getJobProposals = async (req, res) => {
 // @access  Private (Freelancer only)
 export const getMyProposals = async (req, res) => {
   try {
-    const proposals = await Proposal.find({ freelancer: req.user._id })
+    // Build query based on user role
+    let query = {};
+
+    if (req.user.role === 'freelancer') {
+      query = { freelancer: req.user._id };
+    }
+    // For admin users, query remains empty {} to fetch all proposals
+
+    const proposals = await Proposal.find(query)
       .populate('job')
       .populate('job.client', 'name avatar')
       .sort({ createdAt: -1 });

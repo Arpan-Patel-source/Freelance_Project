@@ -15,7 +15,7 @@ router.route('/')
   .get(getJobs)
   .post(protect, authorize('client'), createJob);
 
-router.get('/client/my-jobs', protect, authorize('client'), getMyJobs);
+router.get('/client/my-jobs', protect, authorize('client', 'admin'), getMyJobs);
 
 router.route('/:id')
   .get(getJobById)

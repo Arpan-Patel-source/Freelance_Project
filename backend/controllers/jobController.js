@@ -46,13 +46,8 @@ export const getJobs = async (req, res) => {
     }
 
     if (search) {
-      // Use regex for partial, case-insensitive matching across multiple fields
-      const searchRegex = new RegExp(search, 'i'); // 'i' flag for case-insensitive
-      query.$or = [
-        { title: searchRegex },
-        { description: searchRegex },
-        { skills: { $in: [searchRegex] } }
-      ];
+      // Search only by title, case-insensitive
+      query.title = new RegExp(search, 'i');
     }
 
     if (status) {
@@ -159,7 +154,15 @@ export const deleteJob = async (req, res) => {
 // @access  Private (Client only)
 export const getMyJobs = async (req, res) => {
   try {
-    const jobs = await Job.find({ client: req.user._id })
+    // Build query based on user role
+    let query = {};
+
+    if (req.user.role === 'client') {
+      query = { client: req.user._id };
+    }
+    // For admin users, query remains empty {} to fetch all jobs
+
+    const jobs = await Job.find(query)
       .populate('hiredFreelancer', 'name avatar')
       .sort({ createdAt: -1 });
 

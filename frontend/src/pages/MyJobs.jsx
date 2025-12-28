@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Briefcase, Calendar, IndianRupee, Eye, FileText, Trash2, Edit, Users } from 'lucide-react';
 import api from '../lib/api';
-import { formatCurrency, formatDate } from '../lib/utils';
+import { formatCurrency, formatDateTime } from '../lib/utils';
 import { SkeletonJobCard } from '../components/LoadingSkeleton';
 import ScrollReveal from '../components/ScrollReveal';
 
@@ -179,7 +179,7 @@ export default function MyJobs() {
                                                     </Badge>
                                                 </div>
                                                 <CardDescription className="text-base">
-                                                    Posted {formatDate(job.createdAt)} • Category: {job.category}
+                                                    Posted {formatDateTime(job.createdAt)} • Category: {job.category}
                                                 </CardDescription>
                                             </div>
                                         </div>

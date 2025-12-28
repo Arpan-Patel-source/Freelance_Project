@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -12,7 +12,8 @@ import useJobStore from '../store/useJobStore';
 
 export default function PostJob() {
   const navigate = useNavigate();
-  const { createJob, loading } = useJobStore();
+  const { id } = useParams();
+  const { createJob, updateJob, fetchJobById, currentJob, loading } = useJobStore();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -30,6 +31,29 @@ export default function PostJob() {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [createdJobId, setCreatedJobId] = useState(null);
 
+  useEffect(() => {
+    if (id) {
+      fetchJobById(id);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (id && currentJob) {
+      setFormData({
+        title: currentJob.title || '',
+        description: currentJob.description || '',
+        category: currentJob.category || '',
+        skills: currentJob.skills ? currentJob.skills.join(', ') : '',
+        budgetMin: currentJob.budget ? currentJob.budget.min : '',
+        budgetMax: currentJob.budget ? currentJob.budget.max : '',
+        budgetType: currentJob.budgetType || 'fixed',
+        duration: currentJob.duration || '',
+        experienceLevel: currentJob.experienceLevel || 'intermediate',
+        deadline: currentJob.deadline ? new Date(currentJob.deadline).toISOString().split('T')[0] : '',
+      });
+    }
+  }, [id, currentJob]);
+
   // Get today's date in YYYY-MM-DD format for min date validation
   const getTodayDate = () => {
     const today = new Date();
@@ -41,10 +65,11 @@ export default function PostJob() {
 
   // Validation functions
   const validateTitle = (value) => {
-    const pattern = /^[A-Za-z\s]+$/;
+    // Allow letters, numbers, spaces, and basic punctuation
+    const pattern = /^[A-Za-z0-9\s\-\.,&]+$/;
     if (!value) return 'Job title is required';
     if (!pattern.test(value)) {
-      return 'Job title can only contain letters and spaces';
+      return 'Job title can only contain letters, numbers, and basic punctuation';
     }
     return '';
   };
@@ -104,12 +129,9 @@ export default function PostJob() {
   // Handle input changes with validation
   const handleTitleChange = (e) => {
     const value = e.target.value;
-    // Only allow letters and spaces in real-time
-    if (value === '' || /^[A-Za-z\s]*$/.test(value)) {
-      setFormData({ ...formData, title: value });
-      const error = validateTitle(value);
-      setErrors({ ...errors, title: error });
-    }
+    setFormData({ ...formData, title: value });
+    const error = validateTitle(value);
+    setErrors({ ...errors, title: error });
   };
 
   const handleDescriptionChange = (e) => {
@@ -182,9 +204,15 @@ export default function PostJob() {
           max: Number(formData.budgetMax),
         },
       };
-      const job = await createJob(jobData);
-      setCreatedJobId(job._id);
-      setShowSuccessDialog(true);
+
+      if (id) {
+        await updateJob(id, jobData);
+        navigate('/my-jobs');
+      } else {
+        const job = await createJob(jobData);
+        setCreatedJobId(job._id);
+        setShowSuccessDialog(true);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -239,9 +267,9 @@ export default function PostJob() {
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl">Post a New Job</CardTitle>
+          <CardTitle className="text-3xl">{id ? 'Edit Job' : 'Post a New Job'}</CardTitle>
           <CardDescription>
-            Fill in the details below to find the perfect freelancer
+            {id ? 'Update your job details' : 'Fill in the details below to find the perfect freelancer'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -413,7 +441,7 @@ export default function PostJob() {
 
             <div className="flex gap-4">
               <Button type="submit" disabled={loading}>
-                {loading ? 'Posting...' : 'Post Job'}
+                {loading ? 'Saving...' : (id ? 'Update Job' : 'Post Job')}
               </Button>
               <Button type="button" variant="outline" onClick={() => navigate(-1)}>
                 Cancel

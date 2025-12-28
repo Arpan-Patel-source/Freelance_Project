@@ -8,9 +8,15 @@ import { notifyDeliverable, notifyContractCompleted } from '../utils/notificatio
 // @access  Private
 export const getMyContracts = async (req, res) => {
   try {
-    const query = req.user.role === 'client'
-      ? { client: req.user._id }
-      : { freelancer: req.user._id };
+    // Build query based on user role
+    let query = {};
+
+    if (req.user.role === 'client') {
+      query = { client: req.user._id };
+    } else if (req.user.role === 'freelancer') {
+      query = { freelancer: req.user._id };
+    }
+    // For admin users, query remains empty {} to fetch all contracts
 
     const contracts = await Contract.find(query)
       .populate('job', 'title category')
